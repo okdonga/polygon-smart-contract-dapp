@@ -14,3 +14,7 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById("root")
 );
+
+if (module.hot && process.env.NODE_ENV !== "production") {
+  module.hot.accept();
+}

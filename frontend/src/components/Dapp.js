@@ -1,3 +1,6 @@
+// We import bootstrap here, but you can remove if you want
+import "bootstrap/dist/css/bootstrap.css";
+
 import React from "react";
 
 // We'll use ethers to interact with the Ethereum network and our contract
@@ -18,11 +21,17 @@ import { Transfer } from "./Transfer";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
+import {
+  // HARDHAT_NETWORK_ID,
+  MUMBAI_NETWORK_ID,
+  // POLYGON_NETWORK_ID,
+} from "../constants";
 
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
 // to use when deploying to other networks.
-const HARDHAT_NETWORK_ID = '31337';
+// const NETWORK_ID = '31337';
+const NETWORK_ID = MUMBAI_NETWORK_ID;
 
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
@@ -74,8 +83,8 @@ export class Dapp extends React.Component {
     // clicks a button. This callback just calls the _connectWallet method.
     if (!this.state.selectedAddress) {
       return (
-        <ConnectWallet 
-          connectWallet={() => this._connectWallet()} 
+        <ConnectWallet
+          connectWallet={() => this._connectWallet()}
           networkError={this.state.networkError}
           dismiss={() => this._dismissNetworkError()}
         />
@@ -190,14 +199,14 @@ export class Dapp extends React.Component {
       // `accountsChanged` event can be triggered with an undefined newAddress.
       // This happens when the user removes the Dapp from the "Connected
       // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
-      // To avoid errors, we reset the dapp state 
+      // To avoid errors, we reset the dapp state
       if (newAddress === undefined) {
         return this._resetState();
       }
-      
+
       this._initialize(newAddress);
     });
-    
+
     // We reset the dapp state if the network is changed
     window.ethereum.on("networkChanged", ([networkId]) => {
       this._stopPollingData();
@@ -294,7 +303,7 @@ export class Dapp extends React.Component {
 
       // We send the transaction, and save its hash in the Dapp's state. This
       // way we can indicate that we are waiting for it to be mined.
-      const tx = await this._token.transfer(to, amount);
+      const tx = await this._token.transfer(to, new ethers.BigNumber(amount));
       this.setState({ txBeingSent: tx.hash });
 
       // We use .wait() to wait for the transaction to be mined. This method
@@ -354,14 +363,14 @@ export class Dapp extends React.Component {
     this.setState(this.initialState);
   }
 
-  // This method checks if Metamask selected network is Localhost:8545 
+  // This method checks if Metamask selected network is Localhost:8545
   _checkNetwork() {
-    if (window.ethereum.networkVersion === HARDHAT_NETWORK_ID) {
+    if (window.ethereum.networkVersion === NETWORK_ID) {
       return true;
     }
 
-    this.setState({ 
-      networkError: 'Please connect Metamask to Localhost:8545'
+    this.setState({
+      networkError: "Please connect Metamask to Localhost:8545",
     });
 
     return false;

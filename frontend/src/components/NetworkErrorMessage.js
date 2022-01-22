@@ -2,11 +2,11 @@ import React from "react";
 
 export function NetworkErrorMessage({ message, dismiss }) {
   return (
-    <div className="alert alert-danger" role="alert">
+    <div role="alert" className="alert">
       {message}
       <button
         type="button"
-        className="close"
+        className="alert__close"
         data-dismiss="alert"
         aria-label="Close"
         onClick={dismiss}

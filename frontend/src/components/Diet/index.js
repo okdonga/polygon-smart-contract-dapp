@@ -1,7 +1,7 @@
 import * as React from "react";
 import DietArtifact from "../../contracts/DietChallenge.json";
 import contractAddress from "../../contracts/contract-address.json";
-
+import { tokenSymbol } from "../../constants";
 // All the logic of this dapp is contained in the Dapp component.
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
@@ -269,9 +269,14 @@ const DietTracker = () => {
             <div className="fieldset-item">
               <p>Welcome, {selectedAddress}</p>
               <div>
-                Total Value Locked: <span>{balance} ETH</span>
+                Total Value Locked:{" "}
+                <span>
+                  {balance} {tokenSymbol}
+                </span>
               </div>
-              <div>Total winnnings: {winning} ETH</div>
+              <div>
+                Total winnnings: {winning} {tokenSymbol}
+              </div>
             </div>
           </fieldset>
         </section>

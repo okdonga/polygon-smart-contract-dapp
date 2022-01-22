@@ -8,3 +8,5 @@ export const NETWORK_ID_TO_NAME = {
   [MUMBAI_NETWORK_ID]: "Mumbai testnet",
   [POLYGON_NETWORK_ID]: "Polygon mainnet",
 };
+
+export const tokenSymbol = "MATIC";

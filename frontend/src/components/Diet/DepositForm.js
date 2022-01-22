@@ -1,5 +1,6 @@
 import * as React from "react";
 import { uploadToIpfs } from "../../utils";
+import { tokenSymbol } from "../../constants";
 
 const DepositForm = ({ handleSubmitDeposit }) => {
   const handleSubmit = async (e) => {
@@ -24,7 +25,7 @@ const DepositForm = ({ handleSubmitDeposit }) => {
     <form onSubmit={handleSubmit}>
       <section>
         <header>
-          <h2>Step 1. Set your goal and lock ETH</h2>
+          <h2>Step 1. Set your goal and lock {tokenSymbol}</h2>
           <small>How much do you want to lock your eth?</small>
         </header>
 
@@ -48,7 +49,9 @@ const DepositForm = ({ handleSubmitDeposit }) => {
               </div>
               <hr />
               <label htmlFor="deposit" className="sm-stack left-align">
-                <small>How much eth will you deposit? (unit: ETH)</small>
+                <small>
+                  How much eth will you deposit? (unit: {tokenSymbol})
+                </small>
               </label>
               <div className="currency-input">
                 ⧫

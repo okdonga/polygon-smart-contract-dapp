@@ -21,17 +21,12 @@ import { Transfer } from "./Transfer";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
-import {
-  // HARDHAT_NETWORK_ID,
-  MUMBAI_NETWORK_ID,
-  // POLYGON_NETWORK_ID,
-} from "../constants";
+import { NETWORK_ID } from "../constants";
 
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
 // to use when deploying to other networks.
 // const NETWORK_ID = '31337';
-const NETWORK_ID = MUMBAI_NETWORK_ID;
 
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;

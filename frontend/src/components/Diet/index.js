@@ -45,6 +45,7 @@ import {
   useContractWrite,
   useContractRead,
 } from "../../hooks";
+import { DEFAULT_UNIT } from "../../constants";
 
 const DietTracker = () => {
   // The info of the token (i.e. It's Name and symbol)
@@ -126,7 +127,7 @@ const DietTracker = () => {
 
   const _updateBalance = async () => {
     const balance = await readMethod(contract, getTotalValueLocked, {
-      unit: 18,
+      unit: DEFAULT_UNIT,
     });
     setBalance(balance);
   };
@@ -138,7 +139,7 @@ const DietTracker = () => {
     try {
       const options = { value: etherToWei(amount) };
       // Weight is saved in grams with no decimals, as solidity uint256 doesn't accept decimals
-      const weightInGrams = kilosToGrams(parseFloat(weight));
+      const weightInGrams = kilosToGrams(parseFloat(weight).toFixed(2));
 
       const args = {
         ipfs,
@@ -148,7 +149,9 @@ const DietTracker = () => {
 
       await updateMethod(contract, deposit, args);
       await _updateBalance();
-      await getDepositList();
+      // TODO: catch event DepositCreated
+      // Then display step 2.
+      // await getDepositList();
     } catch (error) {
       setTransactionError(error);
     }
@@ -275,6 +278,8 @@ const DietTracker = () => {
   return (
     <React.Fragment>
       <main>
+        <h1>Blockchain Diet 2022 🚀</h1>
+
         <section>
           <fieldset>
             <div className="fieldset-item">
@@ -303,8 +308,6 @@ const DietTracker = () => {
             </div>
           </fieldset>
         </section>
-
-        <h1>Blockchain Diet 2022</h1>
 
         {/* Step 1 */}
         <DepositForm handleSubmitDeposit={handleSubmitDeposit} />

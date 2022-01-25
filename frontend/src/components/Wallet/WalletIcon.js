@@ -2,7 +2,7 @@
 
 export const WalletIcon = () => {
   return (
-    <div className="wallet">
+    <div className="wallet-icon">
       <svg x="0" y="0" width="16" height="16">
         <rect
           x="0"

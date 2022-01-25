@@ -115,9 +115,18 @@ fieldset:focus-within {
 }
 
 .fieldset-item h1 {
+  display: grid;
+  gap: var(--space-sm);
   margin-block: var(--space-sm);
   grid-template-columns: fit-content(10ch) fit-content(10ch);
   align-items: center;
+}
+
+.fieldset-item h1 button {
+  display: grid;
+  gap: var(--space-sm);
+  align-items: center;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .fieldset-item__line-item {
@@ -132,7 +141,7 @@ fieldset:focus-within {
   transition: box-shadow 0.3s ease;
 }
 
-.wallet {
+.wallet-icon {
   border-radius: 50px;
   overflow: hidden;
   padding: 0px;
@@ -152,8 +161,8 @@ fieldset:focus-within {
 
 .currency-input {
   display: grid;
-  grid-template-columns: 20px 1fr;
-  padding: var(--space-sm);
+  grid-template-columns: var(--space-md) 1fr;
+  padding-block: var(--space-sm);
   align-items: center;
 }
 
@@ -187,13 +196,26 @@ input[type="checkbox"] {
   block-size: var(--space-sm);
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="number"] {
   line-height: var(--space-md);
   border: 1px solid var(--surface4);
   border-radius: var(--space-sm);
   padding: var(--space-xs) var(--space-md);
   text-align: right;
   outline: none;
+}
+
+/* Remove up down arrow  */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 button[type="button"],

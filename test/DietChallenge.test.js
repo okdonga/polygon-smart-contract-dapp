@@ -131,10 +131,12 @@ describe("DietChallenge contract", function () {
       });
 
       expect(await dietChallengeContract.isLocked()).to.equal(false);
+      expect(await dietChallengeContract.isRoundOver()).to.equal(false);
 
       await dietChallengeContract.freezeFunds();
 
       expect(await dietChallengeContract.isLocked()).to.equal(true);
+      expect(await dietChallengeContract.isRoundOver()).to.equal(false);
 
       await expect(
         dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {

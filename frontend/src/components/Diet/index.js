@@ -1,5 +1,4 @@
 import * as React from "react";
-import { ethers } from "ethers";
 
 import DietArtifact from "../../contracts/DietChallenge.json";
 import contractAddress from "../../contracts/contract-address.json";
@@ -7,7 +6,7 @@ import { tokenSymbol } from "../../constants";
 // All the logic of this dapp is contained in the Dapp component.
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
-import { WalletIcon, NoWalletDetected, ConnectWallet } from "../Wallet";
+import { NoWalletDetected, ConnectWallet } from "../Wallet";
 // import { Loading } from "../Common/Loading";
 // import { Transfer } from "../TokenTransfer/Transfer";
 // import { TransactionErrorMessage } from "../TokenTransfer/TransactionErrorMessage";

@@ -15,6 +15,7 @@ import { WalletIcon, NoWalletDetected, ConnectWallet } from "../Wallet";
 // import { NoTokensMessage } from "../TokenTransfer/NoTokensMessage";
 
 import "./Diet.css";
+import Header from "./Header";
 import DepositForm from "./DepositForm";
 import DepositList from "./DepositList";
 import SubmitResult from "./SubmitResult";
@@ -268,46 +269,18 @@ const DietTracker = () => {
   }
 
   const userDeposit = filterDeposit();
-  const addressTrimmed = `${selectedAddress.substring(
-    0,
-    5
-  )}...${selectedAddress.substring(
-    selectedAddress.length - 4,
-    selectedAddress.length
-  )}`;
+
   return (
     <React.Fragment>
       <main>
         <h1>Blockchain Diet 2022 🚀</h1>
 
-        <section>
-          <fieldset>
-            <div className="fieldset-item">
-              <h1>
-                <span>Welcome ✋🏽</span>
-                {"     "}
-                <button aria-label="Wallet address" type="button">
-                  {addressTrimmed} <WalletIcon />
-                </button>
-              </h1>
-
-              <div className="fieldset-item__line-item">
-                <span className="fieldset-item__line-item--sm-heading">
-                  <small>Total Value Locked:</small>
-                </span>
-                <span>
-                  {balance} {tokenSymbol}
-                </span>
-              </div>
-              <div className="fieldset-item__line-item">
-                <span className="fieldset-item__line-item--sm-heading">
-                  <small>Total winnnings:</small>
-                </span>
-                {winning} {tokenSymbol}
-              </div>
-            </div>
-          </fieldset>
-        </section>
+        <Header
+          address={selectedAddress}
+          balance={balance}
+          tokenSymbol={tokenSymbol}
+          winning={winning}
+        />
 
         {/* Step 1 */}
         <DepositForm handleSubmitDeposit={handleSubmitDeposit} />

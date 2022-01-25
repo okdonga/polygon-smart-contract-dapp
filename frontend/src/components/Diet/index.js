@@ -1,30 +1,32 @@
 import * as React from "react";
+import { ethers } from "ethers";
+
 import DietArtifact from "../../contracts/DietChallenge.json";
 import contractAddress from "../../contracts/contract-address.json";
 import { tokenSymbol } from "../../constants";
 // All the logic of this dapp is contained in the Dapp component.
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
-import { NoWalletDetected } from "../NoWalletDetected";
-import { ConnectWallet } from "../ConnectWallet";
-import { Loading } from "../Loading";
-import { Transfer } from "../Transfer";
-import { TransactionErrorMessage } from "../TransactionErrorMessage";
-import { WaitingForTransactionMessage } from "../WaitingForTransactionMessage";
-import { NoTokensMessage } from "../NoTokensMessage";
+import { WalletIcon, NoWalletDetected, ConnectWallet } from "../Wallet";
+// import { Loading } from "../Common/Loading";
+// import { Transfer } from "../TokenTransfer/Transfer";
+// import { TransactionErrorMessage } from "../TokenTransfer/TransactionErrorMessage";
+// import { WaitingForTransactionMessage } from "../TokenTransfer/WaitingForTransactionMessage";
+// import { NoTokensMessage } from "../TokenTransfer/NoTokensMessage";
 
 import "./Diet.css";
 import DepositForm from "./DepositForm";
 import DepositList from "./DepositList";
 import SubmitResult from "./SubmitResult";
 import WithdrawForm from "./WithdrawForm";
-import TBD from "./TBD";
+// import TBD from "./TBD";
 
 import {
   etherToWei,
   getTotalValueLocked,
   getDeposits,
   getWinningAmount,
+  getStatus,
   deposit,
   withdraw,
   submitResult,
@@ -213,6 +215,9 @@ const DietTracker = () => {
   const getDepositList = async () => {
     const data = await readMethod(contract, getDeposits);
     setDepositList(data.map((userInfo) => transformUserData(userInfo)));
+    const a = await readMethod(contract, getStatus);
+    console.log(a);
+    // console.log(([2]);
     // getWinning();
   };
 
@@ -260,28 +265,46 @@ const DietTracker = () => {
   }
 
   const userDeposit = filterDeposit();
-
+  const addressTrimmed = `${selectedAddress.substring(
+    0,
+    5
+  )}...${selectedAddress.substring(
+    selectedAddress.length - 4,
+    selectedAddress.length
+  )}`;
   return (
     <React.Fragment>
       <main>
         <section>
           <fieldset>
             <div className="fieldset-item">
-              <p>Welcome, {selectedAddress}</p>
-              <div>
-                Total Value Locked:{" "}
+              <h1>
+                <span>Welcome ✋🏽</span>
+                {"     "}
+                <button aria-label="Wallet address" type="button">
+                  {addressTrimmed} <WalletIcon />
+                </button>
+              </h1>
+
+              <div className="fieldset-item__line-item">
+                <span className="fieldset-item__line-item--sm-heading">
+                  <small>Total Value Locked:</small>
+                </span>
                 <span>
                   {balance} {tokenSymbol}
                 </span>
               </div>
-              <div>
-                Total winnnings: {winning} {tokenSymbol}
+              <div className="fieldset-item__line-item">
+                <span className="fieldset-item__line-item--sm-heading">
+                  <small>Total winnnings:</small>
+                </span>
+                {winning} {tokenSymbol}
               </div>
             </div>
           </fieldset>
         </section>
 
-        <h1>Let's Diet 2022</h1>
+        <h1>Blockchain Diet 2022</h1>
 
         {/* Step 1 */}
         <DepositForm handleSubmitDeposit={handleSubmitDeposit} />

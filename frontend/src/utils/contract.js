@@ -21,6 +21,19 @@ export const getWinningAmount = async (_contract) => {
   return weiToEtherAtFixedDecimal(amount, 18);
 };
 
+export const getStatus = async (_contract) => {
+  const isLocked = await _contract.isLocked();
+  const isRoundOver = await _contract.isRoundOver();
+  const dueDate = await _contract.dueDate();
+  const winningAmount = await _contract.winningAmount();
+  return {
+    isLocked,
+    isRoundOver,
+    dueDate: dueDate.toString(),
+    winningAmount: weiToEtherAtFixedDecimal(winningAmount, 18),
+  };
+};
+
 export const deposit = async (_contract, { ipfs, weight, options }) => {
   return await _contract.deposit(ipfs, weight, options);
 };

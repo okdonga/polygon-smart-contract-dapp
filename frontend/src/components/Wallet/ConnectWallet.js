@@ -1,6 +1,6 @@
 import React from "react";
 
-import { NetworkErrorMessage } from "./NetworkErrorMessage";
+import { NetworkErrorMessage } from "../Common/NetworkErrorMessage";
 
 export function ConnectWallet({ connectWallet, networkError, dismiss }) {
   return (

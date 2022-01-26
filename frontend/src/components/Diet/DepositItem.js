@@ -1,4 +1,5 @@
 import * as React from "react";
+import classnames from "classnames";
 
 const DepositItem = ({
   address,
@@ -8,10 +9,23 @@ const DepositItem = ({
   reached,
   isGameOver,
 }) => {
+  const [isZoomed, setIsZoomed] = React.useState(false);
+
+  const handleClickImage = () => {
+    setIsZoomed(!isZoomed);
+  };
+
   return (
     <div className="fieldset-item">
-      <picture aria-hidden="true">
-        <img src={goalIpfs} alt="NFT owned by user" width="50" height="50" />
+      <picture
+        // aria-hidden="true"
+        onClick={handleClickImage}
+        className={classnames({
+          "zoomed-in overlay": isZoomed,
+          "zoomed-out": !isZoomed,
+        })}
+      >
+        <img src={goalIpfs} alt="NFT owned by user" width="421" height="150" />
       </picture>
       <div className="sm-stack">
         <strong>{address}</strong>

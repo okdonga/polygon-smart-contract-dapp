@@ -86,7 +86,49 @@ fieldset:focus-within {
   place-self: center;
 }
 
-.fieldset-item > picture {
+.fieldset-item img {
+  object-fit: contain;
+}
+
+.overlay {
+  display: flex;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  bottom: 0;
+  min-width: 100%;
+  height: 100%;
+
+  background: var(--surface4);
+}
+
+.overlay img {
+  margin: auto;
+}
+
+.zoomed-in:hover {
+  cursor: zoom-out;
+}
+
+.zoomed-out:hover {
+  cursor: zoom-in;
+}
+
+.zoomed-in img {
+  transform: scale(1.2);
+  height: 80%;
+  width: 80%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .zoomed-in img,
+  .zoomed-out img {
+    transition: transform 300ms cubic-bezier(0.2, 0, 0.2, 1);
+  }
+}
+
+/* .fieldset-item > picture {
   block-size: var(--space-xl);
   inline-size: var(--space-xl);
   clip-path: circle(40%);
@@ -95,11 +137,11 @@ fieldset:focus-within {
   background: var(--surface4);
 } */
 
-.fieldset-item:focus-within picture {
+/* .fieldset-item:focus-within picture {
   clip-path: circle(50%);
-}
+} */
 
-@media (prefers-reduced-motion: no-preference) {
+/* @media (prefers-reduced-motion: no-preference) {
   .fieldset-item > picture {
     transition: clip-path 0.3s ease;
   }

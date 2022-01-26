@@ -93,7 +93,7 @@ fieldset:focus-within {
   display: inline-grid;
   place-content: center;
   background: var(--surface4);
-}
+} */
 
 .fieldset-item:focus-within picture {
   clip-path: circle(50%);
@@ -103,7 +103,7 @@ fieldset:focus-within {
   .fieldset-item > picture {
     transition: clip-path 0.3s ease;
   }
-}
+} */
 
 .fieldset-item svg {
   fill: var(--text2);
@@ -204,6 +204,7 @@ input[type="number"] {
   padding: var(--space-xs) var(--space-md);
   text-align: right;
   outline: none;
+  background-color: var(--surface3);
 }
 
 /* Remove up down arrow  */

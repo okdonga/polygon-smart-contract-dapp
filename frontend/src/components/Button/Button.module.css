@@ -1,0 +1,29 @@
+.container {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.wallet {
+  display: grid;
+  gap: var(--space-xs);
+  align-items: center;
+  grid-template-columns: 1fr auto;
+}
+
+.wallet span {
+  font-size: 1.5em;
+}
+
+.copy {
+  display: grid;
+  gap: var(--space-xs);
+  align-items: center;
+  grid-template-columns: auto 1fr;
+  justify-items: flex-start;
+}
+
+.copy:hover,
+.copy:active {
+  color: var(--text2);
+  fill: var(--text2);
+}

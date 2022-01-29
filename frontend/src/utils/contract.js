@@ -1,5 +1,5 @@
 import { weiToEtherAtFixedDecimal } from "./";
-import { DEFAULT_UNIT } from "../constants";
+import { TOKEN_DECIMAL_UNIT } from "../constants";
 
 export const getContractData = async (_contract) => {
   const name = await _contract.name();
@@ -19,7 +19,7 @@ export const getDeposits = async (_contract) => {
 
 export const getWinningAmount = async (_contract) => {
   const amount = await _contract.winningAmount();
-  return weiToEtherAtFixedDecimal(amount, DEFAULT_UNIT);
+  return weiToEtherAtFixedDecimal(amount, TOKEN_DECIMAL_UNIT);
 };
 
 export const getStatus = async (_contract) => {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { uploadToIpfs } from "../../utils";
 import { tokenSymbol } from "../../constants";
-import MaticLogo from "../../images/polygon-matic-logo.svg";
+import MaticLogo from "../../assets/polygon-matic-logo.svg";
 
 function returnFileSize(number) {
   if (number < 1024) {

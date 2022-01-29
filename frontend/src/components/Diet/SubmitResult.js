@@ -50,7 +50,7 @@ const SubmitResult = ({ userInfo, handleSubmitResult }) => {
             goalWeight={goal?.weight}
             goalIpfs={goal?.ipfs}
           />
-          <div class="fieldset-item">
+          <div className="fieldset-item">
             <div className="sm-stack">
               <h3>Record your result!</h3>
               <label htmlFor="weight" className="sm-stack left-align">

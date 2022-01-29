@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 // import { Dapp } from "./components/Dapp";
 import DietTracker from "./components/Diet";
+import Layout from "./components/Layout";
 
 import "./index.css";
 // import "bootstrap/dist/css/bootstrap.css";
@@ -11,8 +12,9 @@ import "./index.css";
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <Dapp /> */}
-    <DietTracker />
+    <Layout>
+      <DietTracker />
+    </Layout>
   </React.StrictMode>,
   document.getElementById("root")
 );

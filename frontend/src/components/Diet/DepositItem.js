@@ -1,5 +1,9 @@
 import * as React from "react";
 import classnames from "classnames";
+import { WalletButton } from "../Button";
+import { RoundLabel } from "../Label";
+import { tokenSymbol, WEIGHT_UNIT } from "../../constants";
+import { trimAddress } from "../../utils";
 
 const DepositItem = ({
   address,
@@ -10,6 +14,7 @@ const DepositItem = ({
   isGameOver,
 }) => {
   const [isZoomed, setIsZoomed] = React.useState(false);
+  const addressTrimmed = React.useMemo(() => trimAddress(address), [address]);
 
   const handleClickImage = () => {
     setIsZoomed(!isZoomed);
@@ -27,22 +32,29 @@ const DepositItem = ({
       >
         <img src={goalIpfs} alt="NFT owned by user" width="421" height="150" />
       </picture>
-      <div className="sm-stack">
-        <strong>{address}</strong>
+      <div className="fieldset-item__line-item">
+        <RoundLabel text="Address:" />
+        <WalletButton address={addressTrimmed} />
       </div>
-      <div className="sm-stack">
-        <h4>TVL ⧫ {valueLocked}</h4>
+
+      <div className="fieldset-item__line-item">
+        <RoundLabel text="Total Value Locked:" />
+        {valueLocked} {tokenSymbol}
       </div>
-      <div className="sm-stack">
-        <h4>Weight To-be: {goalWeight} kg</h4>
+      <div className="fieldset-item__line-item">
+        <RoundLabel text="Target Weight:" />
+        {goalWeight} {WEIGHT_UNIT}
       </div>
       {isGameOver && (
         <>
-          <div className="sm-stack">
-            <h4>Goal reached? {reached ? "👍🏽" : `👎`}</h4>
+          <hr />
+          <div className="fieldset-item__line-item">
+            <RoundLabel text="Goal reached?" />
+            {reached ? "👍🏽" : `👎`}
           </div>
-          <div className="sm-stack">
-            <h4>Claimed? {valueLocked > 0 ? "Not yet" : `YES`}</h4>
+          <div className="fieldset-item__line-item">
+            <RoundLabel text="Claimed?" />
+            {valueLocked > 0 ? "Not yet" : `YES`}
           </div>
         </>
       )}

@@ -16,10 +16,10 @@ import contractAddress from "../../contracts/contract-address.json";
 // logic. They just render HTML.
 import { NoWalletDetected } from "../Wallet/NoWalletDetected";
 import { ConnectWallet } from "../Wallet/ConnectWallet";
-import { Loading } from "../Common/Loading";
+import { Loading } from "../Loading/Loading";
 import { Transfer } from "./Transfer";
-import { TransactionErrorMessage } from "./TransactionErrorMessage";
-import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
+import { TransactionErrorMessage } from "../ErrorMessage/TransactionErrorMessage";
+import { WaitingForTransactionMessage } from "../ErrorMessage/WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
 import { NETWORK_ID } from "../../constants";
 

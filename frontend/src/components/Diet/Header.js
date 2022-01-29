@@ -1,11 +1,11 @@
 import * as React from "react";
-import { WalletIcon } from "../Wallet";
+import { WalletButton } from "../Button";
+import { RoundLabel } from "../Label";
+import { tokenSymbol } from "../../constants";
+import { trimAddress } from "../../utils";
 
-const Header = ({ address, balance, tokenSymbol, winning }) => {
-  const addressTrimmed = `${address.substring(0, 5)}...${address.substring(
-    address.length - 4,
-    address.length
-  )}`;
+const Header = ({ address, balance, winning }) => {
+  const addressTrimmed = React.useMemo(() => trimAddress(address), [address]);
 
   return (
     <section>
@@ -14,23 +14,17 @@ const Header = ({ address, balance, tokenSymbol, winning }) => {
           <h1>
             <span>Welcome ✋🏽</span>
             {"     "}
-            <button aria-label="Wallet address" type="button">
-              {addressTrimmed} <WalletIcon />
-            </button>
+            <WalletButton address={addressTrimmed} />
           </h1>
 
           <div className="fieldset-item__line-item">
-            <span className="fieldset-item__line-item--sm-heading">
-              <small>Total Value Locked:</small>
-            </span>
+            <RoundLabel text="Total Value Locked:" />
             <span>
               {balance} {tokenSymbol}
             </span>
           </div>
           <div className="fieldset-item__line-item">
-            <span className="fieldset-item__line-item--sm-heading">
-              <small>Total winnnings:</small>
-            </span>
+            <RoundLabel text="Total winnnings:" />
             {winning} {tokenSymbol}
           </div>
         </div>

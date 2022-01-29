@@ -2,7 +2,6 @@ import * as React from "react";
 
 import DietArtifact from "../../contracts/DietChallenge.json";
 import contractAddress from "../../contracts/contract-address.json";
-import { tokenSymbol } from "../../constants";
 // All the logic of this dapp is contained in the Dapp component.
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
@@ -45,7 +44,7 @@ import {
   useContractWrite,
   useContractRead,
 } from "../../hooks";
-import { DEFAULT_UNIT } from "../../constants";
+import { TOKEN_DECIMAL_UNIT } from "../../constants";
 
 const DietTracker = () => {
   // The info of the token (i.e. It's Name and symbol)
@@ -127,7 +126,7 @@ const DietTracker = () => {
 
   const _updateBalance = async () => {
     const balance = await readMethod(contract, getTotalValueLocked, {
-      unit: DEFAULT_UNIT,
+      unit: TOKEN_DECIMAL_UNIT,
     });
     setBalance(balance);
   };
@@ -272,14 +271,7 @@ const DietTracker = () => {
   return (
     <React.Fragment>
       <main>
-        <h1>Blockchain Diet 2022 🚀</h1>
-
-        <Header
-          address={selectedAddress}
-          balance={balance}
-          tokenSymbol={tokenSymbol}
-          winning={winning}
-        />
+        <Header address={selectedAddress} balance={balance} winning={winning} />
 
         {/* Step 1 */}
         <DepositForm handleSubmitDeposit={handleSubmitDeposit} />

@@ -35,3 +35,10 @@ export const isTheSameAddress = (selectedAddress) => {
   return (item) =>
     item?.address?.toLowerCase() === selectedAddress.toLowerCase();
 };
+
+export const trimAddress = (address) => {
+  return `${address.substring(0, 5)}...${address.substring(
+    address.length - 4,
+    address.length
+  )}`;
+};

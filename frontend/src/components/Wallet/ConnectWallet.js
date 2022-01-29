@@ -1,6 +1,7 @@
 import React from "react";
+import styles from "./Wallet.module.css";
 
-import { NetworkErrorMessage } from "../Common/NetworkErrorMessage";
+import { NetworkErrorMessage } from "../ErrorMessage/NetworkErrorMessage";
 
 export function ConnectWallet({ connectWallet, networkError, dismiss }) {
   return (
@@ -12,7 +13,7 @@ export function ConnectWallet({ connectWallet, networkError, dismiss }) {
         )}
       </div>
       <section>
-        <header>
+        <header className={styles.header}>
           <p>Please connect to your wallet.</p>
           <br />
           <button type="button" onClick={connectWallet}>

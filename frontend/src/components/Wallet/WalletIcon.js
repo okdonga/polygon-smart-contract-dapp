@@ -1,8 +1,9 @@
-// import * as React from "react";
+import * as React from "react";
+import styles from "./Wallet.module.css";
 
 export const WalletIcon = () => {
   return (
-    <div className="wallet-icon">
+    <div className={styles.walleticon}>
       <svg x="0" y="0" width="16" height="16">
         <rect
           x="0"

@@ -42,7 +42,7 @@ const WithdrawForm = ({ userInfo, winning, handleWithdraw }) => {
             reached={reached}
             isGameOver
           />
-          <div class="fieldset-item">
+          <div className="fieldset-item">
             <picture aria-hidden="true">
               <img
                 src={actual?.ipfs}

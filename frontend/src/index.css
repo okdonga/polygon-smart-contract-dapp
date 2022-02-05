@@ -163,7 +163,6 @@ main {
 }
 
 form {
-  max-inline-size: 89vw;
   display: grid;
   gap: var(--space-xl) var(--space-xxl);
   --repeat: auto-fit;
@@ -178,6 +177,7 @@ form {
 }
 
 section {
+  max-inline-size: 89vw;
   display: grid;
   gap: var(--space-md);
   grid-auto-columns: minmax(auto, 500px);

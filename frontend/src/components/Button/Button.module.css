@@ -7,11 +7,11 @@
   display: grid;
   gap: var(--space-xs);
   align-items: center;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
 }
 
-.wallet span {
-  font-size: 1.5em;
+.wallet .small {
+  font-size: var(--space-sm);
 }
 
 .copy {
@@ -22,8 +22,7 @@
   justify-items: flex-start;
 }
 
-.copy:hover,
-.copy:active {
-  color: var(--text2);
-  fill: var(--text2);
-}
+/* .copy:hover span, */
+/* .copy:hover svg .copy:focus-within svg { */
+/* color: var(--text2); */
+/* } */

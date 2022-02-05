@@ -34,7 +34,7 @@ const DepositItem = ({
       </picture>
       <div className="fieldset-item__line-item">
         <RoundLabel text="Address:" />
-        <WalletButton address={addressTrimmed} />
+        <WalletButton address={addressTrimmed} fullAddress={address} />
       </div>
 
       <div className="fieldset-item__line-item">

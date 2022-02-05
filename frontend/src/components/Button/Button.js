@@ -1,34 +1,40 @@
 import * as React from "react";
-import { WalletIcon } from "../Wallet";
-import CopyAddressIcon from "../../assets/copy-address.svg";
+import { CopyIcon } from "../Icon";
 import styles from "./Button.module.css";
+import { copyTextToClipboard } from "../../utils";
 
-const WalletButton = React.memo(function WalletButton({ address }) {
-  const handleClick = () => {
-    // copy
-  };
+const WalletButton = React.memo(function WalletButton({
+  address,
+  fullAddress,
+}) {
+  const [isCopied, setIsCopied] = React.useState(false);
+
+  const handleClick = React.useCallback(
+    async (e) => {
+      try {
+        await copyTextToClipboard(fullAddress);
+        setIsCopied(true);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [fullAddress]
+  );
+
+  React.useEffect(() => {
+    if (isCopied) {
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 1000);
+    }
+  }, [isCopied]);
 
   return (
-    <>
-      <button
-        aria-label="Wallet address"
-        type="button"
-        className={styles.container}
-      >
-        <div className={styles.wallet}>
-          <span>{address}</span>
-          <WalletIcon />
-        </div>
-        <div className={styles.copy}>
-          <img src={CopyAddressIcon} width="16px" alt="Copy address" />
-          <span>Copy Address</span>
-        </div>
-      </button>
-      {/* <button aria-label="Wallet address" type="button" onClick={handleClick}>
-        <img src={CopyAddressIcon} width="16px" alt="Copy address" />
-        Copy Address
-      </button> */}
-    </>
+    <div className={styles.wallet}>
+      {address}
+      <CopyIcon handleClick={handleClick} />
+      {isCopied && <small className={styles.small}>Copied!</small>}
+    </div>
   );
 });
 

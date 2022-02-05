@@ -2,14 +2,3 @@
   grid-auto-columns: max-content;
   justify-content: center;
 }
-
-.walleticon {
-  border-radius: 50px;
-  overflow: hidden;
-  padding: 0px;
-  margin: 0px;
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  background: rgb(1, 142, 114);
-}

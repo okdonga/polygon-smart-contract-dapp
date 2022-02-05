@@ -1,5 +1,5 @@
 import * as React from "react";
-import styles from "./Wallet.module.css";
+import styles from "./Icon.module.css";
 
 export const WalletIcon = () => {
   return (

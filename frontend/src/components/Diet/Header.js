@@ -12,9 +12,7 @@ const Header = ({ address, balance, winning }) => {
       <fieldset>
         <div className="fieldset-item">
           <h1>
-            <span>Welcome ✋🏽</span>
-            {"     "}
-            <WalletButton address={addressTrimmed} />
+            <WalletButton address={addressTrimmed} fullAdddress={address} />
           </h1>
 
           <div className="fieldset-item__line-item">

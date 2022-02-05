@@ -24,6 +24,8 @@
   --surface2: hsl(var(--hue) 10% 15%);
   --surface3: hsl(var(--hue) 5% 20%);
   --surface4: hsl(var(--hue) 5% 25%);
+
+  --shawdow1: rgba(0, 0, 0, 0.42);
 }
 
 @media (prefers-color-scheme: light) {
@@ -74,6 +76,69 @@ h3 {
 }
 
 button,
-input {
+input,
+input[type="file"]::file-selector-button {
   color: var(--text1);
+}
+
+input[type="range"] {
+  display: block;
+  inline-size: 100%;
+}
+
+input[type="checkbox"] {
+  inline-size: var(--space-sm);
+  block-size: var(--space-sm);
+}
+
+input[type="text"],
+input[type="number"] {
+  line-height: var(--space-md);
+  border: 1px solid var(--surface4);
+  border-radius: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  text-align: right;
+  outline: none;
+  background-color: var(--surface3);
+}
+
+/* Remove up down arrow  */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+button[type="button"],
+button[type="submit"],
+input[type="file"]::file-selector-button {
+  line-height: var(--space-md);
+  border: 1px solid var(--surface4);
+  border-radius: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  transition: box-shadow 0.3s ease;
+  background-color: var(--surface4);
+}
+
+button:hover,
+input[type="file"]::file-selector-button:hover {
+  cursor: pointer;
+  box-shadow: 0 5px 20px -10px var(--shawdow1);
+}
+
+input {
+  outline-offset: 5px;
+}
+
+small {
+  color: var(--text2);
+}
+
+header small {
+  line-height: 1.5;
 }

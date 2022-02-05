@@ -142,3 +142,63 @@ small {
 header small {
   line-height: 1.5;
 }
+
+main {
+  display: grid;
+  gap: var(--space-xl);
+  place-content: center;
+  padding: var(--space-sm);
+}
+
+@media (min-width: 540px) {
+  main {
+    padding: var(--space-lg);
+  }
+}
+
+@media (min-width: 800px) {
+  main {
+    padding: var(--space-xl);
+  }
+}
+
+form {
+  max-inline-size: 89vw;
+  display: grid;
+  gap: var(--space-xl) var(--space-xxl);
+  --repeat: auto-fit;
+  /* grid-template-columns: repeat(var(--repeat), minmax(min(10ch, 100%), 35ch)); */
+  align-items: flex-start;
+}
+
+@media (orientation: landscape) and (min-width: 640px) {
+  form {
+    --repeat: 2;
+  }
+}
+
+section {
+  display: grid;
+  gap: var(--space-md);
+  grid-auto-columns: minmax(auto, 500px);
+}
+
+header {
+  display: grid;
+  gap: var(--space-xxs);
+}
+
+fieldset {
+  border: 1px solid var(--surface4);
+  background: var(--surface4);
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  border-radius: var(--space-sm);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+fieldset:focus-within {
+  box-shadow: 0 5px 20px -10px hsl(0 0% 0% / 50%);
+}

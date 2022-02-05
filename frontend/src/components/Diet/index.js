@@ -25,7 +25,7 @@ import {
   getTotalValueLocked,
   getDeposits,
   getWinningAmount,
-  getStatus,
+  // getStatus,
   deposit,
   withdraw,
   submitResult,
@@ -52,7 +52,6 @@ const DietTracker = () => {
   const [depositList, setDepositList] = React.useState([]);
   const [winning, setWinning] = React.useState();
 
-  // The user's address ffand balance
   const {
     setCurrentNetworkId,
     networkError,
@@ -67,28 +66,26 @@ const DietTracker = () => {
     useContractWrite();
   const { readMethod, readError } = useContractRead();
 
-  React.useEffect(() => {
-    const init = async () => {
-      await _connectWallet();
+  const _connectWallet = React.useCallback(async () => {
+    const _intializeEthers = () => {
+      initializeContract({
+        address: contractAddress.DietChallenge,
+        abi: DietArtifact.abi,
+      });
     };
-    init();
-  }, []);
 
-  React.useEffect(() => {
-    if (contract) {
-      _updateBalance();
-      getDepositList();
-      getWinning();
-    }
-  }, [contract]);
+    const _initialize = async (userAddress) => {
+      // This method initializes the dapp
 
-  React.useEffect(() => {
-    if (selectedAddress === undefined) {
-      _resetState();
-    }
-  }, [selectedAddress]);
+      // We first store the user's address in the component's state
+      setSelectedAddress(userAddress);
 
-  const _connectWallet = async () => {
+      // Fetching the token data and the user's balance are specific to this
+      // sample project, but you can reuse the same initialization pattern.
+      _intializeEthers();
+    };
+
+    // const _connectWallet = async () => {
     // This method is run when the user clicks the Connect. It connects the
     // dapp to the user's wallet, and initializes it.
 
@@ -96,18 +93,22 @@ const DietTracker = () => {
     // It returns a promise that will resolve to the user's address.
     try {
       // This opens a Metamask wallet popup, requesting the user to connect to their wallets
-      const [selectedAddress] = await window.ethereum.send(
-        "eth_requestAccounts",
-        []
-      );
+      const { result: [selectedAddress] = [] } =
+        (await window.ethereum.send("eth_requestAccounts", [])) || {};
 
-      // Once we have the address, we can initialize the application.
+      // If the wallet is locked or the user has not connected to any accounts
+      if (!selectedAddress) {
+        alert("Please connect to MetaMask");
+        return;
+      }
 
-      // First we check the network
+      // Next, we check the network
       if (!_checkNetwork()) {
         return;
       }
 
+      // Once we have the address, and the correct network
+      // we can initialize the application.
       _initialize(selectedAddress);
     } catch (err) {
       // https://github.com/MetaMask/metamask-extension/issues/10085
@@ -119,32 +120,14 @@ const DietTracker = () => {
       console.log(err);
       alert("Please open the Metamask wallet and unlock your wallet");
     }
-  };
+  }, [_checkNetwork, initializeContract, setSelectedAddress]);
 
-  const _initialize = async (userAddress) => {
-    // This method initializes the dapp
-
-    // We first store the user's address in the component's state
-    setSelectedAddress(userAddress);
-
-    // Fetching the token data and the user's balance are specific to this
-    // sample project, but you can reuse the same initialization pattern.
-    _intializeEthers();
-  };
-
-  const _intializeEthers = () => {
-    initializeContract({
-      address: contractAddress.DietChallenge,
-      abi: DietArtifact.abi,
-    });
-  };
-
-  const _updateBalance = async () => {
+  const _updateBalance = React.useCallback(async () => {
     const balance = await readMethod(contract, getTotalValueLocked, {
       unit: TOKEN_DECIMAL_UNIT,
     });
     setBalance(balance);
-  };
+  }, [contract, readMethod, setBalance]);
 
   // This method sends an ethereum transaction to transfer tokens.
   // While this action is specific to this application, it illustrates how to
@@ -229,26 +212,26 @@ const DietTracker = () => {
     }
   };
 
-  const getDepositList = async () => {
+  const getDepositList = React.useCallback(async () => {
     const data = await readMethod(contract, getDeposits);
     setDepositList(data.map((userInfo) => transformUserData(userInfo)));
-    const a = await readMethod(contract, getStatus);
-    console.log(a);
+    // const a = await readMethod(contract, getStatus);
+    // console.log(a);
     // console.log(([2]);
     // getWinning();
-  };
+  }, [contract, readMethod]);
 
-  const getWinning = async () => {
+  const getWinning = React.useCallback(async () => {
     const data = await readMethod(contract, getWinningAmount);
     setWinning(data.toString());
-  };
+  }, [contract, readMethod]);
 
   const filterDeposit = () => {
     const fn = isTheSameAddress(selectedAddress);
     return depositList.find(fn) || {};
   };
 
-  const _resetState = () => {
+  const _resetState = React.useCallback(() => {
     // The user's address and balance
     setSelectedAddress();
     setBalance();
@@ -256,7 +239,34 @@ const DietTracker = () => {
     setTxBeingSent();
     setTransactionError();
     setNetworkError();
-  };
+  }, [
+    setSelectedAddress,
+    setBalance,
+    setTxBeingSent,
+    setTransactionError,
+    setNetworkError,
+  ]);
+
+  React.useEffect(() => {
+    const init = async () => {
+      await _connectWallet();
+    };
+    init();
+  }, [_connectWallet]);
+
+  React.useEffect(() => {
+    if (contract) {
+      _updateBalance();
+      getDepositList();
+      getWinning();
+    }
+  }, [contract, _updateBalance, getDepositList, getWinning]);
+
+  React.useEffect(() => {
+    if (selectedAddress === undefined) {
+      _resetState();
+    }
+  }, [selectedAddress, _resetState]);
 
   // Ethereum wallets inject the window.ethereum object. If it hasn't been
   // injected, we instruct the user to install MetaMask.

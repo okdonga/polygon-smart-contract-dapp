@@ -94,16 +94,31 @@ const DietTracker = () => {
 
     // To connect to the user's wallet, we have to run this method.
     // It returns a promise that will resolve to the user's address.
-    const [selectedAddress] = await window.ethereum.enable();
+    try {
+      // This opens a Metamask wallet popup, requesting the user to connect to their wallets
+      const [selectedAddress] = await window.ethereum.send(
+        "eth_requestAccounts",
+        []
+      );
 
-    // Once we have the address, we can initialize the application.
+      // Once we have the address, we can initialize the application.
 
-    // First we check the network
-    if (!_checkNetwork()) {
-      return;
+      // First we check the network
+      if (!_checkNetwork()) {
+        return;
+      }
+
+      _initialize(selectedAddress);
+    } catch (err) {
+      // https://github.com/MetaMask/metamask-extension/issues/10085
+      // There is an issue where the metamask wallet doesn't reopen
+      // if it was accidentally closed the first time
+      // the metamask team is working on a [fix](https://github.com/MetaMask/metamask-extension/issues/10085#issuecomment-768661193),
+      // but in the meantime, alert the user to manually open the metamask wallet and
+      // unlock their wallet
+      console.log(err);
+      alert("Please open the Metamask wallet and unlock your wallet");
     }
-
-    _initialize(selectedAddress);
   };
 
   const _initialize = async (userAddress) => {

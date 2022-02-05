@@ -46,8 +46,20 @@ contract DietChallenge {
 
     mapping(address => UserAttributes) public tvlByUser;
 
+    //                  REGISTERING_BETS     ChallengePeriod          ResultSubmissionPeriod                                                Withdraw
+    //                                     (DIET_CHALLENGE_STARTED~)       (wait period)      (~RESULTS_TALLIED & DIET_CHALLENGE_ENDED)
+    //  ====================================================================================================================================================
+    //  isLocked        false               true                     true                                                                   false
+    //  isRoundOver     false               false                    false                                                                  true
+    enum WorkflowStatus {
+        REGISTERING_BETS,
+        DIET_CHALLENGE_STARTED,
+        DIET_CHALLENGE_ENDED
+    }
+
     uint256 duration; // duration of the game
     uint256 wait; // submit result period
+    WorkflowStatus public workflowStatus;
 
     constructor(uint256 _duration, uint256 _wait) {
         adminAddress = msg.sender;
@@ -57,6 +69,8 @@ contract DietChallenge {
         // restart
         isLocked = false;
         isRoundOver = false;
+
+        workflowStatus = WorkflowStatus.REGISTERING_BETS;
     }
 
     event DepositCreated(
@@ -64,8 +78,22 @@ contract DietChallenge {
         uint256 totalValueLocked,
         uint256 totalUsers
     );
-
+    event ResultSubmitted(uint256 totalResultsSubmitted);
+    event ResultsTallied(uint256 totalWinners, uint256 winningAmount);
     event WithdrawCreated(uint256 valueWithdrawn, uint256 remainingValue);
+    event WorkflowStatusChanged(WorkflowStatus newStatus);
+
+    function getWorkflowStatus()
+        public
+        view
+        returns (
+            WorkflowStatus,
+            bool,
+            bool
+        )
+    {
+        return (workflowStatus, isLocked, isRoundOver);
+    }
 
     function getTotalValueLocked() public view returns (uint256) {
         return address(this).balance;
@@ -115,14 +143,14 @@ contract DietChallenge {
     ///         1) 2 days (wait period) have passed from the end of the deadline and
     /// @dev    2) `releaseFunds()` has to be called before user can start withdrawing
     function withdraw() public canWithdraw {
-        require(dueDate < block.timestamp, "It must pass the duedate");
+        // require(dueDate < block.timestamp, "It must pass the duedate");
 
         // If the results are not submitted in the next 2 days after the challenge, then
         // the withdrawl those who submitted will occur
-        require(
-            block.timestamp - dueDate > wait,
-            "You have to wait until the end of the submission period"
-        );
+        // require(
+        //     block.timestamp - dueDate > wait,
+        //     "You have to wait until the end of the submission period"
+        // );
 
         require(
             tvlByUser[msg.sender].reached == true,
@@ -154,6 +182,8 @@ contract DietChallenge {
         payable(msg.sender).transfer(address(this).balance);
         totalValueLocked = 0;
         winningAmount = 0;
+
+        emit WithdrawCreated(winningAmount, totalValueLocked);
     }
 
     /// @notice User submit their results at the end of the challenge
@@ -183,6 +213,8 @@ contract DietChallenge {
         }
 
         totalResultsSubmitted++;
+
+        emit ResultSubmitted(totalResultsSubmitted);
     }
 
     /// @notice  This locks the funds, and starts the diet challenge
@@ -191,7 +223,9 @@ contract DietChallenge {
         setDueDate();
         lock();
         start();
-        // emit
+        workflowStatus = WorkflowStatus.DIET_CHALLENGE_STARTED;
+
+        emit WorkflowStatusChanged(workflowStatus);
     }
 
     /// @notice This calculates amount to distribute to the winners
@@ -216,6 +250,10 @@ contract DietChallenge {
 
         unlock();
         end();
+        workflowStatus = WorkflowStatus.DIET_CHALLENGE_ENDED;
+
+        emit ResultsTallied(totalWinners, winningAmount);
+        emit WorkflowStatusChanged(workflowStatus);
     }
 
     /// @notice This indicates when the funds are locked for both deposit and withdraw
@@ -265,6 +303,10 @@ contract DietChallenge {
         }
 
         delete userAddresses;
+
+        workflowStatus = WorkflowStatus.REGISTERING_BETS;
+
+        emit WorkflowStatusChanged(workflowStatus);
     }
 
     /// @notice This sets the period of the challenge
@@ -285,7 +327,10 @@ contract DietChallenge {
     ///         submit results
     /// @dev    This is used to check game status before withdraw function is called
     modifier canWithdraw() {
-        require(isRoundOver == true && isLocked == false, "The game not over");
+        require(
+            isRoundOver == true && isLocked == false,
+            "NOT_ELIGITBLE_TO_WITHDRAW"
+        );
         _;
     }
 
@@ -295,14 +340,14 @@ contract DietChallenge {
     modifier canDeposit() {
         require(
             isRoundOver == false && isLocked == false,
-            "The game has already started"
+            "NOT_ELIGIBLE_TO_DEPOSIT"
         );
         _;
     }
 
     /// @dev The address with which the contract is deployed becomes the admin
     modifier onlyAdmin() {
-        require(msg.sender == adminAddress, "This is admin only action");
+        require(msg.sender == adminAddress, "ADMIN_ONLY");
         _;
     }
 }

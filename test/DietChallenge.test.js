@@ -64,8 +64,11 @@ describe("DietChallenge contract", function () {
 
       // This test expects the owner variable stored in the contract to be equal
       // to our Signer's owner.
-      expect(await dietChallengeContract.isRoundOver()).to.equal(false);
-      expect(await dietChallengeContract.isLocked()).to.equal(false);
+      const [status, isLocked, isRoundOver] =
+        await dietChallengeContract.getWorkflowStatus();
+      expect(status).to.equal(0);
+      expect(isLocked).to.equal(false);
+      expect(isRoundOver).to.equal(false);
     });
 
     it("Should assign owner as the admin", async function () {
@@ -135,14 +138,17 @@ describe("DietChallenge contract", function () {
 
       await dietChallengeContract.freezeFunds();
 
-      expect(await dietChallengeContract.isLocked()).to.equal(true);
-      expect(await dietChallengeContract.isRoundOver()).to.equal(false);
+      const [status, isLocked, isRoundOver] =
+        await dietChallengeContract.getWorkflowStatus();
+      expect(status).to.equal(1);
+      expect(isLocked).to.equal(true);
+      expect(isRoundOver).to.equal(false);
 
       await expect(
         dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {
           value: 20000000000,
         })
-      ).to.revertedWith("The game has already started");
+      ).to.revertedWith("NOT_ELIGIBLE_TO_DEPOSIT");
     });
   });
 
@@ -202,50 +208,7 @@ describe("DietChallenge contract", function () {
     });
   });
   describe("Withdraw", function () {
-    // it("After all the users submits the results, users can claim their winnings", async function () {
-    //   await dietChallengeContract.deposit("ipfs://before", 5000, {
-    //     value: 10000000000, // gwei
-    //   });
-    //   await dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {
-    //     value: 20000000000,
-    //   });
-    //   await dietChallengeContract.connect(addr2).deposit("ipfs://", 5000, {
-    //     value: 30000000000,
-    //   });
-    //   await dietChallengeContract.freezeFunds();
-    //   const dueDate = await dietChallengeContract.dueDate(); // block timestamp + 30 days
-    //   const latestBlock = await ethers.provider.getBlock("latest");
-    //   const diff = dueDate - latestBlock.timestamp;
-    //   await ethers.provider.send("evm_increaseTime", [diff]); // fast forward the block timestamp
-    //   await ethers.provider.send("evm_mine", []); // force mine the next block
-
-    //   await dietChallengeContract.submitResult("ipfs://after", 4999); // success
-    //   await dietChallengeContract
-    //     .connect(addr1)
-    //     .submitResult("ipfs://after", 6000); // fail
-    //   await dietChallengeContract
-    //     .connect(addr2)
-    //     .submitResult("ipfs://after", 4600); // success
-
-    //   await dietChallengeContract.releaseFunds(); // This calculates assets to distribute
-    //   expect(await dietChallengeContract.winningAmount()).to.equal(30000000000);
-    //   await dietChallengeContract.withdraw();
-    //   expect(await dietChallengeContract.totalValueLocked()).to.equal(
-    //     30000000000
-    //   ); // Remaining after withdrawal
-
-    //   await expect(dietChallengeContract.withdraw()).to.revertedWith(
-    //     "You have already made your withdrawal"
-    //   );
-    //   await expect(
-    //     dietChallengeContract.connect(addr1).withdraw()
-    //   ).to.revertedWith("You are not eligible for withdraw");
-
-    //   await dietChallengeContract.connect(addr2).withdraw();
-    //   expect(await dietChallengeContract.totalValueLocked()).to.equal(0); // Remaining after withdrawal
-    // });
-
-    it("If 2 days (wait period) have passed since the end of the game, users can claim their winnings", async function () {
+    beforeEach(async function () {
       await dietChallengeContract.deposit("ipfs://before", 5000, {
         value: 10000000000, // gwei
       });
@@ -259,10 +222,30 @@ describe("DietChallenge contract", function () {
       const dueDate = await dietChallengeContract.dueDate(); // block timestamp + 30 days
       const latestBlock = await ethers.provider.getBlock("latest");
       const diff = dueDate - latestBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [diff + 1]); // fast forward the block timestamp
-      //   await ethers.provider.send("evm_mine", []); // force mine the next block
+      await ethers.provider.send("evm_increaseTime", [diff]); // fast forward the block timestamp
+      await ethers.provider.send("evm_mine", []); // force mine the next block
+    });
 
-      // submit results
+    it("Admin must release funds for users to claim their winnings", async function () {
+      await dietChallengeContract.submitResult("ipfs://after", 4999); // success
+      await dietChallengeContract
+        .connect(addr1)
+        .submitResult("ipfs://after", 6000); // fail
+      await dietChallengeContract
+        .connect(addr2)
+        .submitResult("ipfs://after", 4600); // success
+      await expect(dietChallengeContract.withdraw()).to.revertedWith(
+        "NOT_ELIGITBLE_TO_WITHDRAW"
+      );
+      // Admin must wait for the wait period to release funds
+      await ethers.provider.send("evm_increaseTime", [WAIT + 1]); // fast forward the block timestamp
+      await dietChallengeContract.releaseFunds();
+      await expect(dietChallengeContract.withdraw())
+        .to.emit(dietChallengeContract, "WithdrawCreated")
+        .withArgs(30000000000, 30000000000);
+    });
+
+    it("If 2 days (wait period) have passed since the end of the game, users can claim their winnings", async function () {
       await dietChallengeContract.submitResult("ipfs://after", 4999); // success
 
       await ethers.provider.send("evm_increaseTime", [WAIT + 1]); // fast forward the block timestamp
@@ -279,50 +262,19 @@ describe("DietChallenge contract", function () {
       ).to.revertedWith("You are not eligible for withdraw");
     });
 
-    it("Admin should release funds for users to claim their winnigs", async function () {
-      await dietChallengeContract.deposit("ipfs://before", 5000, {
-        value: 10000000000, // gwei
-      });
-      await dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {
-        value: 20000000000,
-      });
-      await dietChallengeContract.connect(addr2).deposit("ipfs://", 5000, {
-        value: 30000000000,
-      });
-      await dietChallengeContract.freezeFunds();
-      const dueDate = await dietChallengeContract.dueDate(); // block timestamp + 30 days
-      const latestBlock = await ethers.provider.getBlock("latest");
-      const diff = dueDate - latestBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [diff]); // fast forward the block timestamp
-      await ethers.provider.send("evm_mine", []); // force mine the next block
-
-      // submit results
+    it("When funds are released, DIET_CHALLENGE_ENDED event is emitted", async function () {
       await dietChallengeContract.submitResult("ipfs://after", 4999); // success
-      // missing releaseFunds()
       await ethers.provider.send("evm_increaseTime", [WAIT]); // 2 days pass
-      await expect(dietChallengeContract.withdraw()).to.revertedWith(
-        "The game not over"
-      );
+      await dietChallengeContract.releaseFunds(); // This calculates assets to distribute
+      await dietChallengeContract.withdraw();
+      const [status, isLocked, isRoundOver] =
+        await dietChallengeContract.getWorkflowStatus();
+      expect(status).to.equal(2);
+      expect(isLocked).to.equal(false);
+      expect(isRoundOver).to.equal(true);
     });
 
     it("If no user has won, the funds are saved for the next round", async function () {
-      await dietChallengeContract.deposit("ipfs://before", 5000, {
-        value: 10000000000, // gwei
-      });
-      await dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {
-        value: 20000000000,
-      });
-      await dietChallengeContract.connect(addr2).deposit("ipfs://", 5000, {
-        value: 30000000000,
-      });
-      await dietChallengeContract.freezeFunds();
-      const dueDate = await dietChallengeContract.dueDate(); // block timestamp + 30 days
-      const latestBlock = await ethers.provider.getBlock("latest");
-      const diff = dueDate - latestBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [diff]); // fast forward the block timestamp
-      await ethers.provider.send("evm_mine", []); // force mine the next block
-
-      // submit results
       await dietChallengeContract.submitResult("ipfs://after", 5001); // fail
       await ethers.provider.send("evm_increaseTime", [WAIT]); // 2 days pass
       await dietChallengeContract.releaseFunds(); // This calculates assets to distribute
@@ -338,23 +290,6 @@ describe("DietChallenge contract", function () {
     });
 
     it("Winner cannot withdraw more than once", async function () {
-      await dietChallengeContract.deposit("ipfs://before", 5000, {
-        value: 10000000000, // gwei
-      });
-      await dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {
-        value: 20000000000,
-      });
-      await dietChallengeContract.connect(addr2).deposit("ipfs://", 5000, {
-        value: 30000000000,
-      });
-      await dietChallengeContract.freezeFunds();
-      const dueDate = await dietChallengeContract.dueDate(); // block timestamp + 30 days
-      const latestBlock = await ethers.provider.getBlock("latest");
-      const diff = dueDate - latestBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [diff]); // fast forward the block timestamp
-      await ethers.provider.send("evm_mine", []); // force mine the next block
-
-      // submit results
       await dietChallengeContract.submitResult("ipfs://after", 4990); // pass
       await ethers.provider.send("evm_increaseTime", [WAIT]); // 2 days pass
       await dietChallengeContract.releaseFunds(); // This calculates assets to distribute
@@ -369,23 +304,6 @@ describe("DietChallenge contract", function () {
     });
 
     it("Admin can withdraw all the funds", async function () {
-      await dietChallengeContract.deposit("ipfs://before", 5000, {
-        value: 10000000000, // gwei
-      });
-      await dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {
-        value: 20000000000,
-      });
-      await dietChallengeContract.connect(addr2).deposit("ipfs://", 5000, {
-        value: 30000000000,
-      });
-      await dietChallengeContract.freezeFunds();
-      const dueDate = await dietChallengeContract.dueDate(); // block timestamp + 30 days
-      const latestBlock = await ethers.provider.getBlock("latest");
-      const diff = dueDate - latestBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [diff]); // fast forward the block timestamp
-      await ethers.provider.send("evm_mine", []); // force mine the next block
-
-      // submit results
       await dietChallengeContract.submitResult("ipfs://after", 5001); // fail
       await ethers.provider.send("evm_increaseTime", [WAIT]); // 2 days pass
       await dietChallengeContract.releaseFunds(); // This calculates assets to distribute
@@ -398,23 +316,6 @@ describe("DietChallenge contract", function () {
     });
 
     it("If there is no more funds left, attempts to withdraw should return an error", async function () {
-      await dietChallengeContract.deposit("ipfs://before", 5000, {
-        value: 10000000000, // gwei
-      });
-      await dietChallengeContract.connect(addr1).deposit("ipfs://", 5000, {
-        value: 20000000000,
-      });
-      await dietChallengeContract.connect(addr2).deposit("ipfs://", 5000, {
-        value: 30000000000,
-      });
-      await dietChallengeContract.freezeFunds();
-      const dueDate = await dietChallengeContract.dueDate(); // block timestamp + 30 days
-      const latestBlock = await ethers.provider.getBlock("latest");
-      const diff = dueDate - latestBlock.timestamp;
-      await ethers.provider.send("evm_increaseTime", [diff]); // fast forward the block timestamp
-      await ethers.provider.send("evm_mine", []); // force mine the next block
-
-      // submit results
       await dietChallengeContract.submitResult("ipfs://after", 4999); // pass
       await ethers.provider.send("evm_increaseTime", [WAIT]); // 2 days pass
       await dietChallengeContract.releaseFunds(); // This calculates assets to distribute
@@ -466,8 +367,12 @@ describe("DietChallenge contract", function () {
       await dietChallengeContract.deposit("ipfs://before", 5000, {
         value: 10000000000, // gwei
       });
-      expect(await dietChallengeContract.isRoundOver()).to.equal(false);
-      expect(await dietChallengeContract.isLocked()).to.equal(false);
+
+      const [status, isLocked, isRoundOver] =
+        await dietChallengeContract.getWorkflowStatus();
+      expect(status).to.equal(0);
+      expect(isLocked).to.equal(false);
+      expect(isRoundOver).to.equal(false);
     });
   });
 });

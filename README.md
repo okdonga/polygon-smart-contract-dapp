@@ -71,6 +71,7 @@ Your environment will have everything you need to build a Dapp powered by Hardha
 - [ethers.js](https://docs.ethers.io/ethers.js/html/): A JavaScript library for interacting with Ethereum.
 - [Waffle](https://github.com/EthWorks/Waffle/): To have Ethereum-specific Chai assertions/mathers.
 - [A sample frontend/Dapp](./frontend): A Dapp which uses [Create React App](https://github.com/facebook/create-react-app).
+- [Alchemy API key](https://alchemy.com): In general, you'll need a private RPC endpoint to write to both to the Mumbai testnet and the Polygon mainnet. The HardHat tutorial uses Alchemy and you get a free API key by signing up for a free account [HERE](https://docs.alchemy.com)
 
 ## Troubleshooting
 
